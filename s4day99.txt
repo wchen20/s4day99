@@ -1,0 +1,150 @@
+s4day99
+项目内容回顾：
+	1. 为什么开发CMDB？
+		Excel维护资产信息，资产变更时难以保证Excel表正确性；信息交换不方便
+		
+		自动采集资产工具，目标：自动汇报，保存变更记录。
+		
+		最终目标：实现运维自动化
+		
+	2. CMDB架构？
+		- 资产采集（资产采集）
+			- 三种模式
+			- 可插拔式插件（Django中间件）
+		- API（接受数据保存入库，对外提供数据接口）
+			- API验证（tornado加密cookie）
+		- 后台管理
+			- 开发增删改查组件
+		
+	3. 你负责做什么？
+		- 资产采集（资产采集）
+			三种方案：
+				- agent
+				- paramiko
+				- saltstack
+			提高扩展性，参考Django：配置，中间件（反射）
+			难题：错误堆栈信息
+		- API 
+		- 后台管理
+
+	4. 有没有遇到难题（坑）？
+		Linux：Linux不太熟
+		唯一标识：大问题 ????????????????
+
+
+上节内容回顾：
+	- 采集资产
+	- API
+	- 后台管理
+		- 自定义增删改查组件
+			- 通过配置文件定义页面实现列以及数据：配置+js
+			- 增删改： js
+			
+今日内容：
+	增删改查组件之增删改： js
+	1. 行进入编辑模式
+		- 内容 -> input标签
+		- 内容 -> select标签
+	2. 删除保存按钮
+		
+	总结：
+		保存：
+			- nb-list.js
+			- nb-tpl.html
+		使用：
+			1. 两个URL
+				url      -> 页面
+				url_json -> 操作
+			2. HTML
+					{% include 'nb-tpl.html' %}
+					<script src="/static/nb-list.js"></script>
+					<script>
+						$.xx('/backend/idc_json.html');
+					</script>
+			3. 配置文件规则
+				table_config = [
+						{
+							'q': None,         # 数据查询字段
+							'title': '选择',     # 显示标题
+							'display': True,   # 是否显示
+							'text': {
+								'tpl': "<input type='checkbox' value='{n1}' />",
+								'kwargs': {'n1': '@id'}
+							},
+							'attrs':{'nid':'@id'}
+
+						},
+						{
+							'q': 'id',
+							'title': 'ID',
+							'display': False,
+							'text': {
+								'tpl': "{n1}",
+								'kwargs': {'n1': '@id'}
+							},
+							'attrs':{'k1':'v1','k2':'@id'}
+						},
+						{
+							'q': 'device_type_id',
+							'title': '资产类型',
+							'display': True,
+							'text': {
+								'tpl': "{n1}",
+								'kwargs': {'n1': '@@device_type_choices'}
+							},
+							'attrs':{'k1':'v1','origin':'@device_type_id','edit-enable':'true','edit-type':'select','global_key':'device_type_choices','name':'device_type_id'}
+						},
+						{
+							'q': 'device_status_id',
+							'title': '状态',
+							'display': True,
+							'text': {
+								'tpl': "{n1}",
+								'kwargs': {'n1': '@@device_status_choices'}
+							},
+							'attrs':{'name':'device_status_id','edit-enable':'true','origin': '@device_status_id','edit-type':'select','global_key':'device_status_choices' }
+						},
+						{
+							'q': 'cabinet_num',
+							'title': '机柜号',
+							'display': True,
+							'text': {
+								'tpl': "{n1}",
+								'kwargs': {'n1': '@cabinet_num'}
+							},
+							'attrs':{'name':'cabinet_num','k1':'v1','k2':'@id','edit-enable':'true'}
+						},
+						{
+							'q': 'idc_id',
+							'title': '机房',
+							'display': False,
+							'text': {},
+							'attrs':{}
+						},
+						{
+							'q': 'idc__name',
+							'title': '机房',
+							'display': True,
+							'text': {
+								'tpl': "{n1}",
+								'kwargs': {'n1': '@idc__name'}
+							},
+							'attrs':{'name':'idc_id','k1':'v1','origin':'@idc_id','edit-enable':'true','edit-type':'select','global_key':'idc_choices'}
+						},
+						# 页面显示：标题：操作；删除，编辑：a标签
+						{
+							'q': None,
+							'title': '操作',
+							'display': True,
+							'text': {
+								'tpl': "<a href='/del?nid={nid}'>删除</a>",
+								'kwargs': {'nid': '@id'}
+							},
+							'attrs':{'k1':'v1','k2':'@id'}
+						},
+					]
+			
+				
+	
+
+
